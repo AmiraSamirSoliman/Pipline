@@ -1,5 +1,28 @@
 version: 2.1
-
+Resources:
+  Ec2Instance:
+    Type: 'AWS::EC2::Instance'
+    Properties:
+      SecurityGroups:
+        - !Ref InstanceSecurityGroup
+      KeyName: udacity
+      ImageId: 'ami-068663a3c619dd892'
+  InstanceSecurityGroup:
+    Type: 'AWS::EC2::SecurityGroup'
+    Properties:
+      GroupDescription: Enable SSH access via port 22
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: '22'
+          ToPort: '22'
+          CidrIp: 0.0.0.0/0
+commands:
+  destroy_environment:
+    steps:
+      - run:
+          name: Destroy environment
+          command: |
+            aws cloudformation delete-stack --stack-name prod-${CIRCLE_WORKFLOW_ID}
 jobs:
   configure_infrastructure:
     docker:
@@ -31,14 +54,6 @@ jobs:
               else
                return 1
               fi
-  commands:
-  destroy_environment:
-    steps:
-      - run:
-          name: Destroy environment
-          command: |
-            aws cloudformation delete-stack --stack-name prod-${CIRCLE_WORKFLOW_ID}
-
   create_infrastructure:
     docker:
       - image: amazon/aws-cli
@@ -55,7 +70,7 @@ jobs:
         when: on_fail
 
 workflows:
-  my_workflow:
+   my_workflow:
     jobs:
       #- smoke_test
       - build
