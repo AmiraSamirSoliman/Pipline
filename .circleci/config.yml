@@ -16,7 +16,7 @@ jobs:
           name: Configure server
           command: |
             ansible-playbook -i inventory.txt playbook.yml
-    smoke_test:
+  smoke_test:
       docker:
         - image: alpine:latest
       steps:
@@ -31,7 +31,6 @@ jobs:
               else
                return 1
               fi
-
 
 workflows:
   my_workflow:
